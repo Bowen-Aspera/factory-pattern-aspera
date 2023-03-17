@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Employee Factory</title>
+  </head>
+  <body>
+    <h1>Employee Factory</h1>
+    <button id="create-button">Create Employee</button>
+    <style>
+        table, th, td {
+          border:1px solid black;
+        }
+        </style>
+    <table style="width:70%">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody id="employees-container"></tbody>
+    </table>
+    <script>
+// Main class na employee
+      class Employee {
+        constructor(name, type, details) {
+          this.name = name;
+          this.type = type;
+          this.details = details;
+        }
+// Details nga naka array
+        getDetailsText() {
+          return this.details.join(", ");
+        }
+// Table format para sa mga types
+        toTableRow() {
+          const tr = document.createElement("tr");
+          const nameTd = document.createElement("td");
+          const typeTd = document.createElement("td");
+          const detailsTd = document.createElement("td");
+          nameTd.textContent = this.name;
+          typeTd.textContent = this.type;
+          detailsTd.textContent = this.getDetailsText();
+          tr.appendChild(nameTd);
+          tr.appendChild(typeTd);
+          tr.appendChild(detailsTd);
+          return tr;
+        }
+      }
+// class na developer na under sa main class or parent class na Employee same sa tester
+// constructor nga type where it is name ug language same sa tester gyapon
+// super where ang naka add lang kay ang developer para sa factory
+      class Developer extends Employee {
+        constructor(name, language) {
+          super(name, "Developer", [language]);
+        }
+      }
+
+      class Tester extends Employee {
+        constructor(name, area) {
+          super(name, "Tester", [area]);
+        }
+      }
+// employee factory where naka switch case siya, kay since duwa man ka class ang naa sa atoa where ang case 1 sa developer ug ang case 2 kayy sa tester
+      class EmployeeFactory {
+        create(name, type, langOrArea) {
+          switch (type) {
+            case 1:
+              return new Developer(name, langOrArea);
+            case 2:
+              return new Tester(name, langOrArea);
+            default:
+              throw new Error("Invalid employee type!");
+          }
+        }
+      }
+// function where if ma click tong create employee button
+      function createEmployee() {
+        try {
+          const name = prompt("Enter employee name:");
+          if (!name) {
+            return;
+          }
+          const type = parseInt(prompt("Enter employee type (1 for Developer, 2 for Tester):"));
+          if (![1, 2].includes(type)) {
+            throw new Error("Invalid employee type!");
+          }
+          let langOrArea = "";
+          if (type === 1) {
+            langOrArea = prompt("Enter programming language:");
+          } else if (type === 2) {
+            langOrArea = prompt("Enter testing area:");
+          }
+// nag instintiate ta dari na part
+          const employeeFactory = new EmployeeFactory();
+          const employee = employeeFactory.create(name, type, langOrArea);
+          const employeesContainer = document.getElementById("employees-container");
+          const employeeRow = employee.toTableRow();
+          employeesContainer.appendChild(employeeRow);
+        } catch (error) {
+          alert(error.message);
+        }
+      }
+
+      const createButton = document.getElementById("create-button");
+      createButton.addEventListener("click", createEmployee);
+    </script>
+  </body>
+</html>
